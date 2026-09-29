@@ -30,8 +30,8 @@ PONTUACAO_IMPACTO = re.compile(r"[!?]")
 NUMEROS = re.compile(r"\b\d+([.,]\d+)?\s*(%|por cento|mil|milh(ão|ões)|reais|r\$)?\b", re.IGNORECASE)
 
 DURACAO_MIN = 30
-DURACAO_MAX = 120
-DURACOES_ALVO = [30, 45, 60, 90, 120]  # janelas testadas a partir de cada ponto de início
+DURACAO_MAX = 150
+DURACOES_ALVO = [30, 45, 60, 90, 120, 150]  # janelas testadas a partir de cada ponto de início
 
 
 def _pontuar_texto(texto: str) -> float:
