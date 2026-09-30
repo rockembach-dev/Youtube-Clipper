@@ -18,7 +18,7 @@ from google import genai
 
 # Modelo leve e com tier gratuito generoso - bom para testes.
 # Alternativas gratuitas: "gemini-2.0-flash-lite", "gemini-2.5-flash"
-MODELO = "gemini-2.0-flash-lite"
+MODELO = "gemini-3.5-flash-lite"
 PASTA_DOCS = Path("docs")
 
 # Se seu código-fonte estiver em pastas específicas, filtre aqui.
