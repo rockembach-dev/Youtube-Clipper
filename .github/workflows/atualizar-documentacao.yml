@@ -31,6 +31,7 @@ jobs:
       - name: Gerar/atualizar documentação via IA (Gemini gratuito)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BEFORE_SHA: ${{ github.event.before }}
         run: python scripts/atualizar_docs.py
 
       - name: Abrir Pull Request com a doc atualizada
