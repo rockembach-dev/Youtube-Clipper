@@ -30,11 +30,11 @@ MARGEM_LOGO = 28                # distância da logo até as bordas (em px)
 OPACIDADE_LOGO = 0.97           # 1.0 = totalmente opaca
 
 # --- Handle da conta (@usuario) ----------------------------------------------
-HANDLE_PADRAO = "@cortes.do.rock"
+#HANDLE_PADRAO = "@cortes.do.rock"
 
 # --- Faixa vermelha de abertura (rodapé) --------------------------------------
-ALTURA_FAIXA_RODAPE = 220       # altura da faixa vermelha, em px (canvas 1080x1920)
-COR_FAIXA_RODAPE = "0xE8231F"   # vermelho vibrante, formato hex do ffmpeg (RRGGBB)
+#ALTURA_FAIXA_RODAPE = 220       # altura da faixa vermelha, em px (canvas 1080x1920)
+#OR_FAIXA_RODAPE = "0xE8231F"   # vermelho vibrante, formato hex do ffmpeg (RRGGBB)
 
 
 def _obter_dimensoes_video(caminho_video: str):
