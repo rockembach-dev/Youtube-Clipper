@@ -17,17 +17,52 @@ from pathlib import Path
 from google import genai
 
 # Modelo leve e com tier gratuito generoso - bom para testes.
-# Alternativas gratuitas: "gemini-2.0-flash-lite", "gemini-2.5-flash"
 MODELO = "gemini-3.5-flash-lite"
 PASTA_DOCS = Path("docs")
 
 # Se seu código-fonte estiver em pastas específicas, filtre aqui.
 PASTAS_MONITORADAS = []  # ex: ["youtube-clipper-completo"]
 
+# Hash "mágico" do Git que representa uma árvore vazia — usado como base de
+# comparação quando não existe nenhum commit anterior de verdade (ex: o
+# primeiro push do repositório).
+ARVORE_VAZIA = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+
+
+def obter_commit_base() -> str:
+    """
+    Decide contra qual commit comparar. Usa o SHA de antes de TODO o push
+    (github.event.before), não só do último commit — assim, se alguém der
+    push com vários commits de uma vez, ou se uma execução anterior tiver
+    falhado no meio do caminho, nenhuma mudança fica "perdida" na comparação.
+    """
+    before = os.environ.get("BEFORE_SHA", "").strip()
+
+    if before and before != "0" * 40:
+        verificacao = subprocess.run(
+            ["git", "cat-file", "-e", f"{before}^{{commit}}"],
+            capture_output=True,
+        )
+        if verificacao.returncode == 0:
+            return before
+
+    # Fallback 1: tenta o commit anterior ao HEAD (caso BEFORE_SHA não
+    # esteja disponível, ex: rodando localmente sem essa variável).
+    resultado = subprocess.run(
+        ["git", "rev-parse", "HEAD~1"], capture_output=True, text=True,
+    )
+    if resultado.returncode == 0:
+        return resultado.stdout.strip()
+
+    # Fallback 2: é o primeiro commit que existe no repositório — compara
+    # contra a árvore vazia (ou seja, tudo no HEAD é "novo").
+    return ARVORE_VAZIA
+
 
 def arquivos_alterados() -> list[str]:
+    base = obter_commit_base()
     resultado = subprocess.run(
-        ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
+        ["git", "diff", "--name-only", base, "HEAD"],
         capture_output=True, text=True, check=True,
     )
     arquivos = [f for f in resultado.stdout.splitlines() if f.endswith(".py")]
@@ -37,8 +72,9 @@ def arquivos_alterados() -> list[str]:
 
 
 def obter_diff(arquivo: str) -> str:
+    base = obter_commit_base()
     resultado = subprocess.run(
-        ["git", "diff", "HEAD~1", "HEAD", "--", arquivo],
+        ["git", "diff", base, "HEAD", "--", arquivo],
         capture_output=True, text=True, check=True,
     )
     return resultado.stdout
