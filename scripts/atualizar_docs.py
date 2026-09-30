@@ -80,29 +80,69 @@ def obter_diff(arquivo: str) -> str:
     return resultado.stdout
 
 
+def obter_metadados_commit() -> dict:
+    """Busca dados reais do commit atual, para a IA usar em vez de inventar
+    placeholders como 'YYYY-MM-DD' ou 'Desenvolvedor'."""
+    def git_log(formato: str) -> str:
+        resultado = subprocess.run(
+            ["git", "log", "-1", f"--pretty={formato}"],
+            capture_output=True, text=True,
+        )
+        return resultado.stdout.strip()
+
+    return {
+        "hash_curto": git_log("%h"),
+        "autor": git_log("%an"),
+        "data": git_log("%ad") + "",  # formato padrão do git já é legível
+        "mensagem": git_log("%s"),
+    }
+
+
 def caminho_doc(arquivo: str) -> Path:
     nome_modulo = Path(arquivo).stem
     return PASTA_DOCS / f"{nome_modulo}.md"
 
 
-def montar_prompt(arquivo: str, diff: str, codigo_atual: str, doc_antiga: str | None) -> str:
+def montar_prompt(arquivo: str, diff: str, codigo_atual: str, doc_antiga: str | None, metadados: dict) -> str:
+    info_commit = (
+        f"- Hash do commit: {metadados['hash_curto']}\n"
+        f"- Autor: {metadados['autor']}\n"
+        f"- Data: {metadados['data']}\n"
+        f"- Mensagem do commit: {metadados['mensagem']}"
+    )
+
     if doc_antiga:
         instrucao = (
             "Abaixo está a documentação ATUAL desse módulo, o DIFF da mudança "
             "recente e o CÓDIGO COMPLETO já atualizado. Atualize a documentação "
             "considerando apenas o que realmente mudou no comportamento/estrutura "
             "do código. Preserve seções que não foram afetadas pela mudança. "
-            "Se algo foi renomeado ou movido de lugar, deixe isso explícito. "
-            "Adicione uma linha na tabela de Histórico de mudanças no final. "
+            "Se algo foi renomeado, movido de lugar ou desativado/comentado, "
+            "deixe isso explícito, incluindo se algum trecho de funcionalidade "
+            "foi comentado e por isso está inativo no momento. "
+            "Adicione uma linha na tabela de Histórico de mudanças no final, "
+            "descrevendo especificamente o que esse diff mudou (não escreva "
+            "algo genérico). Use OBRIGATORIAMENTE a data e o hash do commit "
+            "reais fornecidos abaixo em 'Informações do commit atual' — nunca "
+            "escreva placeholders como 'YYYY-MM-DD' ou 'Desenvolvedor'. "
             "Responda APENAS com o markdown final do documento, sem comentários extras."
         )
         contexto_doc = f"\n\n## Documentação atual\n{doc_antiga}"
     else:
         instrucao = (
-            "Este módulo ainda não tem documentação. Gere uma documentação "
-            "completa em markdown com as seções: Propósito, Como funciona, "
-            "Dependências, Pontos de configuração (o que costuma mudar), e uma "
-            "tabela de Histórico de mudanças com uma única linha inicial. "
+            "Este módulo já existe no código, mas ainda não tinha documentação "
+            "registrada até agora — não confunda isso com 'módulo recém-criado'. "
+            "Gere uma documentação completa cobrindo o estado ATUAL do código "
+            "(já refletindo a mudança mostrada no diff, incluindo qualquer trecho "
+            "comentado/desativado por ela). Seções: Propósito, Como funciona, "
+            "Dependências, Pontos de configuração (o que costuma mudar). "
+            "Na tabela de Histórico de mudanças, a ÚNICA linha deve descrever "
+            "especificamente a mudança real mostrada no diff acima — não escreva "
+            "'implementação inicial' nem qualquer texto genérico de placeholder, "
+            "a menos que o diff mostre de fato a criação do arquivo do zero. "
+            "Use OBRIGATORIAMENTE a data e o hash do commit reais fornecidos "
+            "abaixo em 'Informações do commit atual' — nunca escreva "
+            "placeholders como 'YYYY-MM-DD' ou 'Desenvolvedor'. "
             "Responda APENAS com o markdown final do documento, sem comentários extras."
         )
         contexto_doc = ""
@@ -110,6 +150,9 @@ def montar_prompt(arquivo: str, diff: str, codigo_atual: str, doc_antiga: str | 
     return f"""{instrucao}
 
 ## Arquivo: {arquivo}
+
+## Informações do commit atual
+{info_commit}
 
 ## Diff da mudança
 ```diff
@@ -124,7 +167,7 @@ def montar_prompt(arquivo: str, diff: str, codigo_atual: str, doc_antiga: str | 
 """
 
 
-def gerar_ou_atualizar_doc(client: genai.Client, arquivo: str) -> None:
+def gerar_ou_atualizar_doc(client: genai.Client, arquivo: str, metadados: dict) -> None:
     print(f"[..] Processando {arquivo}")
 
     diff = obter_diff(arquivo)
@@ -136,7 +179,7 @@ def gerar_ou_atualizar_doc(client: genai.Client, arquivo: str) -> None:
     caminho = caminho_doc(arquivo)
     doc_antiga = caminho.read_text(encoding="utf-8") if caminho.exists() else None
 
-    prompt = montar_prompt(arquivo, diff, codigo_atual, doc_antiga)
+    prompt = montar_prompt(arquivo, diff, codigo_atual, doc_antiga, metadados)
 
     resposta = client.models.generate_content(model=MODELO, contents=prompt)
     texto_doc = resposta.text
@@ -153,6 +196,7 @@ def main():
         sys.exit(1)
 
     client = genai.Client(api_key=api_key)
+    metadados = obter_metadados_commit()
 
     arquivos = arquivos_alterados()
     if not arquivos:
@@ -161,7 +205,7 @@ def main():
 
     for arquivo in arquivos:
         try:
-            gerar_ou_atualizar_doc(client, arquivo)
+            gerar_ou_atualizar_doc(client, arquivo, metadados)
         except Exception as e:
             print(f"[ERRO] Falha ao processar {arquivo}: {e}", file=sys.stderr)
 
