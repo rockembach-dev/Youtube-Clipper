@@ -30,7 +30,7 @@ COR_BORDA = "&H00000000"       # contorno preto
 ESPESSURA_BORDA = 5
 MARGEM_INFERIOR = 350          # distância da legenda até a base do vídeo (em px, no canvas 1080x1920)
 MAX_PALAVRAS_POR_BLOCO = 3
-DURACAO_MAX_BLOCO = 2.2        # segundos
+DURACAO_MAX_BLOCO = 3.2        # segundos
 ESCALA_PALAVRA_ATIVA = 140     # % de tamanho da palavra sendo falada (100 = tamanho normal)
 
 # --- Aparência da faixa de abertura (rodapé) ---------------------------------
