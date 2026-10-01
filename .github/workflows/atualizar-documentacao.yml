@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - '**.py'
+      - 'README.md'
       - '!docs/**'
+      - '!Instruções/**'
 
 jobs:
   atualizar-docs:
@@ -28,13 +30,19 @@ jobs:
       - name: Instalar dependências do script
         run: pip install google-genai
 
-      - name: Gerar/atualizar documentação via IA (Gemini gratuito)
+      - name: Gerar/atualizar documentação técnica via IA (Gemini gratuito)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           BEFORE_SHA: ${{ github.event.before }}
         run: python scripts/atualizar_docs.py
 
-      - name: Abrir Pull Request com a doc atualizada
+      - name: Gerar/atualizar manual de uso em HTML (Instruções/)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: python scripts/gerar_manual_html.py
+
+      - name: Abrir Pull Request com a documentação atualizada
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "docs: atualização automática via IA (Gemini)"

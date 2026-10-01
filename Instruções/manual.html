@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YouTube Clipper — Manual de Uso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #ffffff;
+    --ink: #1c1d22;
+    --ink-soft: #52555f;
+    --paper: #f7f6f3;
+    --line: #e4e2dc;
+    --dark: #14161b;
+    --dark-soft: #9aa0ad;
+    --accent: #ff4d6d;
+    --accent-dim: #ffe1e6;
+    --ok: #3fae6a;
+    --mono: "IBM Plex Mono", monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Inter", sans-serif; line-height:1.6; font-size:16px;
+  }
+  h1,h2,h3{font-family:"Space Grotesk", sans-serif; margin:0; color:var(--ink);}
+  a{color:var(--accent);}
+  .wrap{max-width:760px; margin:0 auto; padding:0 28px;}
+
+  /* HERO */
+  .hero{background:var(--dark); color:#fff; padding:88px 0 64px;}
+  .hero .wrap{max-width:760px;}
+  .eyebrow{color:var(--accent); font-size:14px; font-weight:500; margin-bottom:14px;}
+  .hero h1{font-size:44px; line-height:1.08; letter-spacing:-0.01em; max-width:9ch; color:#fff;}
+  .hero p{color:var(--dark-soft); font-size:18px; max-width:46ch; margin-top:16px;}
+  .hero-term{
+    margin-top:36px; background:#0a0b0e; border:1px solid #262a33; border-radius:10px;
+    padding:18px 20px; font-family:var(--mono); font-size:13.5px; color:#c9d1d9;
+  }
+  .hero-term .p{color:var(--accent);}
+  .hero-term .c{color:#fff;}
+
+  section{padding:56px 0;}
+  section + section{border-top:1px solid var(--line);}
+  .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:50%; background:var(--dark); color:#fff;
+    font-family:var(--mono); font-size:13px; margin-right:12px; flex-shrink:0;
+  }
+  .step-title{display:flex; align-items:center; margin-bottom:14px;}
+  h2{font-size:24px;}
+  section p, section li{color:var(--ink-soft); font-size:15.5px;}
+  section ul{padding-left:20px;}
+  code.inline{
+    font-family:var(--mono); background:var(--paper); border:1px solid var(--line);
+    padding:1px 6px; border-radius:5px; font-size:13.5px; color:var(--ink);
+  }
+
+  .term{
+    background:var(--dark); border-radius:10px; padding:16px 18px; margin:16px 0;
+    font-family:var(--mono); font-size:13px; color:#c9d1d9; overflow-x:auto;
+  }
+  .term .ln{white-space:pre;}
+  .term .cmd::before{content:"$ "; color:var(--dark-soft);}
+  .term .cmd{color:#fff;}
+  .term .info{color:#6fb3ff;}
+  .term .ok{color:#6fe3a0;}
+  .term .cmt{color:var(--dark-soft);}
+
+  .card{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin:16px 0;}
+  .card.tip{border-left:3px solid var(--accent);}
+  .card.tip b{color:var(--accent);}
+
+  table{width:100%; border-collapse:collapse; margin:18px 0; font-size:14px;}
+  th{
+    background:var(--dark); color:#fff; text-align:left; padding:10px 12px;
+    font-family:"Space Grotesk", sans-serif; font-weight:500; font-size:13.5px;
+  }
+  td{padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; color:var(--ink-soft);}
+  tr:nth-child(even) td{background:#fbfaf8;}
+  td code{font-family:var(--mono); font-size:12.8px; color:var(--ink); white-space:nowrap;}
+
+  .examples{display:grid; gap:14px;}
+  .ex-label{font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:6px;}
+
+  footer{padding:40px 0 70px; color:var(--dark-soft); font-size:13.5px;}
+
+  @media (max-width:640px){
+    .hero{padding:60px 0 44px;}
+    .hero h1{font-size:32px;}
+    section{padding:40px 0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Manual de uso</div>
+    <h1>YouTube Clipper</h1>
+    <p>Transforma o link de um vídeo do YouTube em cortes verticais prontos para TikTok, Reels e Shorts — sem interface, direto pelo terminal.</p>
+    <div class="hero-term">
+      <div><span class="p">$</span> <span class="c">python main.py "https://www.youtube.com/watch?v=XXXXXXXX"</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="o-que-e">
+  <div class="wrap">
+    <h2>O que este programa faz</h2>
+    <p>Você entrega um link do YouTube. O programa devolve, sozinho, vários cortes curtos (30s a 2min), já no formato vertical, com legenda, marca d'água e identificação da conta. Quatro etapas acontecem automaticamente:</p>
+    <ul>
+      <li><b>Baixa</b> o vídeo do YouTube</li>
+      <li><b>Transcreve</b> a fala, com o tempo exato de cada frase</li>
+      <li><b>Analisa</b> a transcrição e escolhe os melhores trechos</li>
+      <li><b>Corta e formata</b> cada trecho, pronto para postar</li>
+    </ul>
+  </div>
+</section>
+
+<section id="instalacao">
+  <div class="wrap">
+    <h2>Instalação (uma única vez)</h2>
+
+    <div class="step-title"><span class="step-num">1</span><b>Instalar o FFmpeg</b></div>
+    <div class="term">
+<div class="ln cmt"># macOS</div>
+<div class="ln cmd">brew install ffmpeg</div>
+<div class="ln cmt"># Ubuntu/Debian</div>
+<div class="ln cmd">sudo apt install ffmpeg</div>
+<div class="ln cmt"># Windows (com Chocolatey)</div>
+<div class="ln cmd">choco install ffmpeg</div>
+    </div>
+
+    <div class="step-title"><span class="step-num">2</span><b>Criar um ambiente virtual</b></div>
+    <div class="term">
+<div class="ln cmd">python -m venv venv</div>
+<div class="ln cmd">source venv/bin/activate</div>
+<div class="ln cmt"># Windows: venv\Scripts\activate</div>
+    </div>
+
+    <div class="step-title"><span class="step-num">3</span><b>Instalar as dependências</b></div>
+    <div class="term">
+<div class="ln cmd">pip install -r requirements.txt</div>
+    </div>
+  </div>
+</section>
+
+<section id="primeiro-uso">
+  <div class="wrap">
+    <h2>Gerando seu primeiro corte</h2>
+    <p>Com tudo instalado, rode o comando passando o link do vídeo entre aspas:</p>
+    <div class="term">
+<div class="ln cmd">python main.py "https://www.youtube.com/watch?v=XXXXXXXX"</div>
+    </div>
+    <p>O que acontece no terminal, na ordem:</p>
+    <div class="term">
+<div class="ln">============================================================</div>
+<div class="ln">PIPELINE DE CORTES VIRAIS</div>
+<div class="ln">============================================================</div>
+<div class="ln info">[INFO] Saída deste vídeo: clipes/como-crescer-no-tiktok-em-2026/</div>
+<div class="ln cmt"># ... baixa, transcreve e analisa o vídeo (pode levar alguns minutos)</div>
+<div class="ln">============================================================</div>
+<div class="ln ok">CONCLUÍDO: 6 clipes gerados a partir de 'Como crescer no TikTok em 2026'</div>
+<div class="ln ok">Tudo salvo em: clipes/como-crescer-no-tiktok-em-2026/</div>
+<div class="ln">============================================================</div>
+    </div>
+    <div class="card tip"><b>Dica:</b> vídeos longos (podcasts de 1h+) demoram mais. Use <code class="inline">--rapido</code> para acelerar bastante.</div>
+  </div>
+</section>
+
+<section id="resultados">
+  <div class="wrap">
+    <h2>Onde encontrar os resultados</h2>
+    <div class="term">
+<div class="ln">clipes/</div>
+<div class="ln">  `-- como-crescer-no-tiktok-em-2026/</div>
+<div class="ln">        |-- 01_o-erro-que-90-das-pessoas-cometem.mp4</div>
+<div class="ln">        |-- 02_a-tecnica-que-mudou-tudo.mp4</div>
+<div class="ln">        |-- transcricao.txt</div>
+<div class="ln">        `-- relatorio_cortes.json</div>
+    </div>
+    <ul>
+      <li>Os <b>.mp4</b> — vídeos cortados, numerados, prontos para postar</li>
+      <li><code class="inline">transcricao.txt</code> — transcrição completa, útil para conferir o que foi dito</li>
+      <li><code class="inline">relatorio_cortes.json</code> — horário, gancho, motivo da escolha e legenda sugerida de cada corte</li>
+    </ul>
+  </div>
+</section>
+
+<section id="parametros">
+  <div class="wrap">
+    <h2>Todos os parâmetros</h2>
+    <p>Nenhum é obrigatório — o programa funciona só com o link.</p>
+    <table>
+      <tr><th>Flag</th><th>O que faz</th><th>Padrão</th></tr>
+      <tr><td><code>--modelo-whisper</code></td><td>Qualidade da transcrição: small, base, medium, large-v3</td><td><code>small</code></td></tr>
+      <tr><td><code>--qtd-cortes</code></td><td>Quantos cortes tentar gerar</td><td><code>12</code></td></tr>
+      <tr><td><code>--horizontal</code></td><td>Mantém o formato original, sem verticalizar</td><td>desligado</td></tr>
+      <tr><td><code>--idioma</code></td><td>Força o idioma da transcrição (ex: pt)</td><td>automático</td></tr>
+      <tr><td><code>--analise</code></td><td><code>local</code> (gratuito) ou <code>api</code> (via Claude, mais preciso)</td><td><code>local</code></td></tr>
+      <tr><td><code>--layout</code></td><td><code>preenchido</code> (zoom) ou <code>blur</code> (fundo desfocado)</td><td><code>preenchido</code></td></tr>
+      <tr><td><code>--sem-legenda</code></td><td>Desativa a legenda queimada no vídeo</td><td>ativa</td></tr>
+      <tr><td><code>--paralelo</code></td><td>Quantos clipes cortar ao mesmo tempo</td><td>automático</td></tr>
+      <tr><td><code>--rapido</code></td><td>Prioriza velocidade (bom para vídeos longos)</td><td>desligado</td></tr>
+      <tr><td><code>--sem-marca-dagua</code></td><td>Desativa a logo do canal</td><td>ativa</td></tr>
+      <tr><td><code>--handle</code></td><td>Texto do @ da conta exibido no vídeo</td><td><code>@cortes.do.rock</code></td></tr>
+      <tr><td><code>--sem-handle</code></td><td>Desativa o @ da conta</td><td>ativo</td></tr>
+    </table>
+  </div>
+</section>
+
+<section id="exemplos">
+  <div class="wrap">
+    <h2>Exemplos práticos</h2>
+    <div class="examples">
+      <div>
+        <div class="ex-label">Podcast longo, priorizando velocidade</div>
+        <div class="term"><div class="ln cmd">python main.py "https://youtu.be/XXXXXXXX" --rapido --qtd-cortes 8</div></div>
+      </div>
+      <div>
+        <div class="ex-label">Layout com fundo desfocado, sem legenda</div>
+        <div class="term"><div class="ln cmd">python main.py "https://youtu.be/XXXXXXXX" --layout blur --sem-legenda</div></div>
+      </div>
+      <div>
+        <div class="ex-label">Conta e marca d'água personalizadas</div>
+        <div class="term"><div class="ln cmd">python main.py "https://youtu.be/XXXXXXXX" --handle @meucanal --sem-marca-dagua</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="problemas">
+  <div class="wrap">
+    <h2>Problemas comuns</h2>
+    <p><b>"ffmpeg: comando não encontrado"</b> — repita a instalação do FFmpeg e reinicie o terminal.</p>
+    <p><b>"[AVISO] Nenhum corte válido foi identificado"</b> — confira o <code class="inline">transcricao.txt</code> gerado; vídeos muito musicais ou editados tendem a funcionar pior.</p>
+    <p><b>Processamento lento</b> — use <code class="inline">--rapido</code> e considere <code class="inline">--modelo-whisper base</code>.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Dúvidas sobre este manual? Fale com quem configurou o pipeline no seu time.</div>
+</footer>
+
+</body>
+</html>
