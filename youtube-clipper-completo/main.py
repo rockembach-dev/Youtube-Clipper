@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import datetime  # [ALTERAÇÃO 1] Novo import para pegar a data e hora do teste
 
 from downloader import baixar_video
 from transcriber import transcrever, formatar_transcricao_para_analise
@@ -69,9 +68,8 @@ def main():
         preset_corte = "ultrafast"
         print("[INFO] Modo --rapido ativado: modelo Whisper 'base' + corte em preset 'ultrafast'.")
 
-    # [ALTERAÇÃO 2] Banner modificado para confirmar visualmente no console/interface
     print("=" * 60)
-    print("PIPELINE DE CORTES VIRAIS - [VERSÃO DE TESTE UI]")
+    print("PIPELINE DE CORTES VIRAIS")
     print("=" * 60)
 
     # 1. Download
@@ -123,8 +121,6 @@ def main():
     relatorio = {
         "video_original": titulo,
         "url": args.url,
-        "data_geracao": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"), # [ALTERAÇÃO 3] Campo novo para atestar o funcionamento
-        "modo_teste": True, # Apenas uma flag para termos certeza
         "cortes": [
             {
                 "arquivo": g["arquivo"],
@@ -143,13 +139,6 @@ def main():
     caminho_relatorio = os.path.join(pasta_video, "relatorio_cortes.json")
     with open(caminho_relatorio, "w", encoding="utf-8") as f:
         json.dump(relatorio, f, ensure_ascii=False, indent=2)
-
-    # [ALTERAÇÃO 4] Geração de um arquivo Markdown bônus só pra atestar que o script novo rodou
-    caminho_md = os.path.join(pasta_video, "resumo_rapido.md")
-    with open(caminho_md, "w", encoding="utf-8") as f:
-        f.write(f"# Sucesso: {titulo}\n\n")
-        f.write(f"Interface HTML acionou o script em: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
-        f.write(f"Foram gerados **{len(gerados)}** clipes prontos para postagem.\n")
 
     print("\n" + "=" * 60)
     print(f"CONCLUÍDO: {len(gerados)} clipes gerados a partir de '{titulo}'")
